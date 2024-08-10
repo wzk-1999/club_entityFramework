@@ -1,0 +1,43 @@
+﻿@model IEnumerable<zhankui_wang_Practice_Asst_5.Models.BridgeClub>
+
+@{
+    ViewData["Title"] = "Clubs";
+}
+
+<h1>Clubs</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().ClubName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().CityName)
+            </th>
+            <th>
+                @Html.DisplayName("Number of Members")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClubName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CityName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MembersBodySize)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="NewClub">Create New Club</a>
+</div>

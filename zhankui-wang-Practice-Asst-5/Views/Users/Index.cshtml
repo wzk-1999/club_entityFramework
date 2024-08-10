@@ -1,0 +1,88 @@
+﻿@model IEnumerable<zhankui_wang_Practice_Asst_5.Models.User>
+
+@{
+    ViewData["Title"] = "Index";
+    var userAvailableClubs = ViewData["UserAvailableClubs"] as Dictionary<int, List<zhankui_wang_Practice_Asst_5.Models.BridgeClub>>;
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th>@Html.DisplayNameFor(model => model.Address)</th>
+            <th>@Html.DisplayNameFor(model => model.PostalCode)</th>
+            <th>@Html.DisplayNameFor(model => model.CityName)</th>
+            <th>Action</th>
+            <th>Club</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => user.Name)</td>
+                <td>@Html.DisplayFor(modelItem => user.Address)</td>
+                <td>@Html.DisplayFor(modelItem => user.PostalCode)</td>
+                <td>@Html.DisplayFor(modelItem => user.CityName)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@user.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@user.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+                </td>
+                <td>
+                    <form class="join-form" data-user-id="@user.Id">
+                        @Html.AntiForgeryToken()  @* very important!!! or this form can't submit *@
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <select name="clubId" class="form-control">
+                            @foreach (var club in userAvailableClubs[user.Id])
+                            {
+                                <option value="@club.ClubID">@club.ClubName</option>
+                            }
+                        </select>
+                        <button type="button" class="btn btn-primary join-button">Join</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- JavaScript for confirmation dialog and AJAX request -->
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.join-button').forEach(button => {
+                button.addEventListener('click', function () {
+                    var form = button.closest('form');
+                    var userId = form.getAttribute('data-user-id');
+                    var clubId = form.querySelector('select[name="clubId"]').value;
+                    var clubName = form.querySelector('select[name="clubId"] option:checked').text;
+
+                    if (confirm(`Do you want to join ${clubName}?`)) {
+                        fetch('/Users/JoinClub', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            },
+                            body: JSON.stringify({ userId: userId, clubId: clubId })
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('You have joined the club successfully.');
+                                    location.reload(); // Reload the page to reflect changes
+                                } else {
+                                    alert('An error occurred while joining the club.');
+                                }
+                            });
+                    }
+                });
+            });
+        });
+    </script>
+}

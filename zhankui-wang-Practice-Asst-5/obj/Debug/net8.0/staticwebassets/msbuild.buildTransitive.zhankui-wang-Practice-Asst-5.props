@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\zhankui-wang-Practice-Asst-5.props" />
+</Project>
